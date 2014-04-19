@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=320, initial-scale=1, minimum-scale=1, maximum-scale=1, minimal-ui">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>
+$(function(){
+
+  var context = new webkitAudioContext();
+  var pitch = 0;
+  var mod = 0; // 0 major, 1 minor, 2 sus4
+
+  window.addEventListener('devicemotion', function(e){
+    var gravity = e.accelerationIncludingGravity;
+    var za = Math.abs(Math.round(gravity.z));
+    //pitch = za;
+    if(0 <= za && za <= 3){
+      mod = 1;
+    }else if(4 <= za && za <= 7){
+      mod = 0;
+    }else if(8 <= za && za <= 10){
+      mod = 2;
+    }
+    $('#debug').text(mod);
+
+
+  });
+
+
+  var soundBuffer;
+  function loadSound(url) {
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+    request.responseType = 'arraybuffer';
+  
+    // Decode asynchronously
+    request.onload = function() {
+      context.decodeAudioData(request.response, function(buffer) {
+        soundBuffer = buffer;
+      }, function (){});
+    }
+    request.send();
+  }
+  loadSound('a.wav');
+
+  function poyo(freq){
+      //var oscillator = context.createOscillator();
+      var oscillator = context.createBufferSource();
+      oscillator.buffer = soundBuffer;
+
+      eg = context.createGainNode();
+      //eg.gain.linearRampToValueAtTime(1, 0.1);
+      oscillator.connect(eg);
+      eg.connect(context.destination);
+      console.log(eg);
+
+      //oscillator.type = 1;
+      //oscillator.frequency.value = freq;
+      oscillator.playbackRate.value = freq/440 * (pitch/100 + 1);
+      //oscillator.connect(context.destination);
+      oscillator.noteOn(0);
+
+     var t0 = context.currentTime;
+     //eg.gain.value= 0;
+     eg.gain.setValueAtTime(1, t0);
+     eg.gain.linearRampToValueAtTime(0.1, t0 + 0.5);
+     eg.gain.linearRampToValueAtTime(0, t0 + 5);
+     return oscillator
+  }
+  $('#start').click(function(){
+    n1 = poyo(440);
+    n2 = poyo(880);
+    n3 = poyo(220);
+  });
+
+
+  $('#stop').click(function(){
+    n1.noteOff(0);
+    n2.noteOff(0);
+    n3.noteOff(0);
+  });
+
+  var mFlag = false;
+  function toneBtn(elm, freq){
+    elm.bind('touchstart mousedown',function(){
+      $(this).css('background-color','blue');
+      if(mFlag){
+        n1.noteOff(0);
+      }
+      n1 = poyo(freq);
+      mFlag = true;
+      return false;
+    });
+    elm.bind('touchend mouseup',function(){
+      $(this).css('background-color','#333');
+      //n1.noteOff(0);
+      //mFlag = false;
+      //n1 = null;
+    });
+  }
+
+  var cFlag = false;
+  function chordBtn(elm, no){
+    // no
+
+    elm.bind('touchstart',function(){
+      $(this).css('background-color','blue');
+      if(cFlag){
+        n2.noteOff(0);
+        n3.noteOff(0);
+        n4.noteOff(0);
+      }
+
+
+    switch(mod){
+      case 0:
+      case 1:
+      case 2:
+        switch(no){
+          case 0: freq1 = tones[0]/2; freq2 = tones[2]/2;freq3 = tones[4]/2;break; //C
+          case 1: freq1 = tones[1]/2; freq2 = tones[3]/2;freq3 = tones[5]/2;break; //Dm
+          case 2: freq1 = tones[2]/2; freq2 = tones[4]/2;freq3 = tones[6]/2;break; //Em
+          case 3: freq1 = tones[3]/2; freq2 = tones[5]/2;freq3 = tones[0]/2;break; //F
+          case 4: freq1 = tones[4]/2; freq2 = tones[6]/2;freq3 = tones[1]/2;break; //G
+          case 5: freq1 = tones[5]/2; freq2 = tones[0]/2;freq3 = tones[2]/2;break; //Am
+          case 6: freq1 = tones[6]/2; freq2 = tones[1]/2;freq3 = tones[3]/2;break; //Bm
+        }
+      break;
+/*
+      case 1:
+        switch(no){
+          case 0: freq1 = tones[0]/2; freq2 = tones[1]/2;freq3 = tones[4]/2;break; //Cm
+          case 1: freq1 = tones[1]/2; freq2 = tones[4]/2;freq3 = tones[5]/2;break; //D
+          case 2: freq1 = tones[2]/2; freq2 = tones[5]/2;freq3 = tones[6]/2;break; //E
+          case 3: freq1 = tones[3]/2; freq2 = tones[4]/2;freq3 = tones[1]/2;break; //Fm
+          case 4: freq1 = tones[4]/2; freq2 = tones[5]/2;freq3 = tones[2]/2;break; //Gm
+          case 5: freq1 = tones[5]/2; freq2 = tones[1]/2;freq3 = tones[3]/2;break; //A
+          case 6: freq1 = tones[6]/2; freq2 = tones[2]/2;freq3 = tones[4]/2;break; //B
+        }
+      break;
+       case 2:
+        switch(no){
+          case 0: freq1 = tones[0]/2; freq2 = tones[3]/2;freq3 = tones[4]/2;break; //Csus4
+          case 1: freq1 = tones[1]/2; freq2 = tones[5]/2;freq3 = tones[5]/2;break; //Dsus4
+          case 2: freq1 = tones[2]/2; freq2 = tones[6]/2;freq3 = tones[6]/2;break; //Esus4
+          case 3: freq1 = tones[3]/2; freq2 = tones[6]/2;freq3 = tones[1]/2;break; //Fsus4
+          case 4: freq1 = tones[4]/2; freq2 = tones[7]/2;freq3 = tones[2]/2;break; //Gsus4
+          case 5: freq1 = tones[5]/2; freq2 = tones[2]/2;freq3 = tones[3]/2;break; //Asus4
+          case 6: freq1 = tones[6]/2; freq2 = tones[3]/2;freq3 = tones[4]/2;break; //Bsus4
+        }
+      break;
+*/
+    }
+      n2 = poyo(freq1);
+      n3 = poyo(freq2);
+      n4 = poyo(freq3);
+      cFlag = true;
+      return false;
+    });
+    elm.bind('touchend',function(){
+      $(this).css('background-color','#333');
+      //n2.noteOff(0);
+      //n3.noteOff(0);
+      //n4.noteOff(0);
+      //cFlag = false;
+      //n2 = null;
+      //n3 = null;
+      //n4 = null;
+    });
+  }
+  var tones = [
+    523.251131,
+    587.329536,
+    659.255114,
+    698.456463,
+    783.990872,
+    880.000000,
+    493.883301 * 2
+  ];
+
+  $('body').bind('touchstart mousedown',function(e){
+    return false;
+  });
+
+  toneBtn($('#c1'),tones[0]/2);
+  toneBtn($('#d1'),tones[1]/2);
+  toneBtn($('#e1'),tones[2]/2);
+  toneBtn($('#f1'),tones[3]/2);
+  toneBtn($('#g1'),tones[4]/2);
+  toneBtn($('#a1'),tones[5]/2);
+  toneBtn($('#b1'),tones[6]/2);
+
+  toneBtn($('#c2'),tones[0]);
+  toneBtn($('#d2'),tones[1]);
+  toneBtn($('#e2'),tones[2]);
+  toneBtn($('#f2'),tones[3]);
+  toneBtn($('#g2'),tones[4]);
+  toneBtn($('#a2'),tones[5]);
+  toneBtn($('#b2'),tones[6]);
+
+  toneBtn($('#c3'),tones[0]*2);
+  toneBtn($('#d3'),tones[1]*2);
+  toneBtn($('#e3'),tones[2]*2);
+  toneBtn($('#f3'),tones[3]*2);
+  toneBtn($('#g3'),tones[4]*2);
+  toneBtn($('#a3'),tones[5]*2);
+  toneBtn($('#b3'),tones[6]*2);
+
+
+  chordBtn($('#c'),0);
+  chordBtn($('#d'),1);
+  chordBtn($('#e'),2);
+  chordBtn($('#f'),3);
+  chordBtn($('#g'),4);
+  chordBtn($('#a'),5);
+  chordBtn($('#b'),6);
+
+
+});
+</script>
+
+<style>
+*{
+  margin:0px;
+  padding:0px;
+  user-select: none;
+}
+body{
+  background-color:#366;
+}
+#whole{
+/*
+  height:200px;
+  width:100%;
+  background-color:gray;
+*/
+}
+#lcolumn{
+  float:left;
+}
+#rcolumn{
+  float:right;
+}
+.key{
+  width:72px;
+  height:72px;
+  background-color:#333;
+  color:white;
+  margin:2px;
+  text-align:center;
+  font-size:3em;
+}
+</style>
+
+</head>
+
+<body>
+
+<div id="whole">
+  <div id="lcolumn">
+    <div class="key" id="c1">C</div>
+    <div class="key" id="d1">D</div>
+    <div class="key" id="e1">E</div>
+    <div class="key" id="f1">F</div>
+    <div class="key" id="g1">G</div>
+    <div class="key" id="a1">A</div>
+    <div class="key" id="b1">B</div>
+  </div>
+  <div id="lcolumn">
+    <div class="key" id="c2">C</div>
+    <div class="key" id="d2">D</div>
+    <div class="key" id="e2">E</div>
+    <div class="key" id="f2">F</div>
+    <div class="key" id="g2">G</div>
+    <div class="key" id="a2">A</div>
+    <div class="key" id="b2">B</div>
+  </div>
+  <div id="lcolumn">
+    <div class="key" id="c3">C</div>
+    <div class="key" id="d3">D</div>
+    <div class="key" id="e3">E</div>
+    <div class="key" id="f3">F</div>
+    <div class="key" id="g3">G</div>
+    <div class="key" id="a3">A</div>
+    <div class="key" id="b3">B</div>
+  </div>
+ 
+  <div id="rcolumn">
+    <div class="key" id="c">C</div>
+    <div class="key" id="d">Dm</div>
+    <div class="key" id="e">Em</div>
+    <div class="key" id="f">F</div>
+    <div class="key" id="g">G</div>
+    <div class="key" id="a">Am</div>
+    <div class="key" id="b">Bm</div>
+  </div>
+</div>
+
+
+</body>
+</html>
