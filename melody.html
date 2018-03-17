@@ -10,7 +10,7 @@
 <script>
 $(function(){
   try{
-  var context = new AudioContext();
+  var context = new webkitAudioContext();
   }catch(e){
     alert(e)
   }
