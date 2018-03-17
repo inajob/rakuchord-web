@@ -44,14 +44,15 @@ $(function(){
   n3 = null;
 
   $('#start').bind("touchstart",function(){
-    alert("touch")
-  });
-  $('#start').click(function(){
     alert(0);
   //setInterval(function(){
+    try{
     if(n1)n1.stop(0);
     if(n2)n2.stop(0);
     if(n3)n3.stop(0);
+    }catch(e){
+      alert(e)
+    }
     n1 = poyo(220 + Math.random()*400);
     n2 = poyo(220 + Math.random()*400);
     n3 = poyo(220 + Math.random()*400);
