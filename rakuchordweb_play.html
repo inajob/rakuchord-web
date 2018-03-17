@@ -10,7 +10,7 @@
 <script>
 $(function(){
 
-  var context = new webkitAudioContext();
+  var context = new AudioContext();
   var pitch = 0;
   var mod = 0; // 0 major, 1 minor, 2 sus4
 
@@ -52,7 +52,7 @@ $(function(){
       var oscillator = context.createBufferSource();
       oscillator.buffer = soundBuffer;
 
-      eg = context.createGainNode();
+      eg = context.createGain();
       //eg.gain.linearRampToValueAtTime(1, 0.1);
       oscillator.connect(eg);
       eg.connect(context.destination);
@@ -62,7 +62,7 @@ $(function(){
       //oscillator.frequency.value = freq;
       oscillator.playbackRate.value = freq/440 * (pitch/100 + 1);
       //oscillator.connect(context.destination);
-      oscillator.noteOn(0);
+      oscillator.start(0);
 
      var t0 = context.currentTime;
      //eg.gain.value= 0;
@@ -79,9 +79,9 @@ $(function(){
 
 
   $('#stop').click(function(){
-    n1.noteOff(0);
-    n2.noteOff(0);
-    n3.noteOff(0);
+    n1.stop(0);
+    n2.stop(0);
+    n3.stop(0);
   });
 
   var mFlag = false;
@@ -89,7 +89,7 @@ $(function(){
     elm.bind('touchstart mousedown',function(){
       $(this).css('background-color','blue');
       if(mFlag){
-        n1.noteOff(0);
+        n1.stop(0);
       }
       n1 = poyo(freq);
       mFlag = true;
@@ -97,7 +97,7 @@ $(function(){
     });
     elm.bind('touchend mouseup',function(){
       $(this).css('background-color','#333');
-      //n1.noteOff(0);
+      //n1.stop(0);
       //mFlag = false;
       //n1 = null;
     });
@@ -110,9 +110,9 @@ $(function(){
     elm.bind('touchstart',function(){
       $(this).css('background-color','blue');
       if(cFlag){
-        n2.noteOff(0);
-        n3.noteOff(0);
-        n4.noteOff(0);
+        n2.stop(0);
+        n3.stop(0);
+        n4.stop(0);
       }
 
 
@@ -163,9 +163,9 @@ $(function(){
     });
     elm.bind('touchend',function(){
       $(this).css('background-color','#333');
-      //n2.noteOff(0);
-      //n3.noteOff(0);
-      //n4.noteOff(0);
+      //n2.stop(0);
+      //n3.stop(0);
+      //n4.stop(0);
       //cFlag = false;
       //n2 = null;
       //n3 = null;
