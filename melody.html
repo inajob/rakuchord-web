@@ -9,10 +9,10 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script>
 $(function(){
-  var context = new webkitAudioContext();
+  var context = new AudioContext();
   function poyo(freq){
       var oscillator = context.createOscillator();
-      eg = context.createGainNode();
+      eg = context.createGain();
       //eg.gain.linearRampToValueAtTime(1, 0.1);
       oscillator.connect(eg);
       eg.connect(context.destination);
@@ -21,7 +21,7 @@ $(function(){
       oscillator.type = 1;
       oscillator.frequency.value = freq;
       //oscillator.connect(context.destination);
-      oscillator.noteOn(0);
+      oscillator.start(0);
 
      var t0 = context.currentTime;
      //eg.gain.value= 0;
@@ -36,9 +36,9 @@ $(function(){
 
   $('#start').click(function(){
   setInterval(function(){
-    if(n1)n1.noteOff(0);
-    if(n2)n2.noteOff(0);
-    if(n3)n3.noteOff(0);
+    if(n1)n1.stop(0);
+    if(n2)n2.stop(0);
+    if(n3)n3.stop(0);
     n1 = poyo(220 + Math.random()*400);
     n2 = poyo(220 + Math.random()*400);
     n3 = poyo(220 + Math.random()*400);
