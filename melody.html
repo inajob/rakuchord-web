@@ -11,22 +11,26 @@
 $(function(){
   var context = new AudioContext();
   function poyo(freq){
+      alert(1)
       var oscillator = context.createOscillator();
       eg = context.createGain();
       //eg.gain.linearRampToValueAtTime(1, 0.1);
       oscillator.connect(eg);
       eg.connect(context.destination);
       //console.log(eg);
+      alert(2)
 
       oscillator.type = 1;
       oscillator.frequency.value = freq;
       //oscillator.connect(context.destination);
       oscillator.start(0);
+      alert(3)
 
      var t0 = context.currentTime;
      //eg.gain.value= 0;
      eg.gain.setValueAtTime(1, t0);
      eg.gain.linearRampToValueAtTime(0.1, t0 + 0.5);
+      alert(4)
      return oscillator
   }
 
@@ -35,14 +39,14 @@ $(function(){
   n3 = null;
 
   $('#start').click(function(){
-  setInterval(function(){
+  //setInterval(function(){
     if(n1)n1.stop(0);
     if(n2)n2.stop(0);
     if(n3)n3.stop(0);
     n1 = poyo(220 + Math.random()*400);
     n2 = poyo(220 + Math.random()*400);
     n3 = poyo(220 + Math.random()*400);
-  }, 500)
+  //}, 500)
   });
 
 });
