@@ -9,6 +9,9 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script>
 $(function(){
+  var height = $(window).height();
+  var margin = height - 74 * 7 ;
+  $("#whole").css("margin-top",margin + "px");
 
   var context = new webkitAudioContext();
   var pitch = 0;
