@@ -90,7 +90,7 @@ $(function(){
 
   var mFlag = false;
   function toneBtn(elm, freq){
-    elm.bind('touchstart mousedown',function(){
+    elm.bind('touchstart',function(){
       $(this).css('background-color','blue');
       if(mFlag){
         n1.stop(0);
@@ -99,7 +99,7 @@ $(function(){
       mFlag = true;
       return false;
     });
-    elm.bind('touchend mouseup',function(){
+    elm.bind('touchend',function(){
       $(this).css('background-color','#333');
       //n1.stop(0);
       //mFlag = false;
