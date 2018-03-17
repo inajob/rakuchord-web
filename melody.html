@@ -9,13 +9,53 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script>
 $(function(){
-  try{
   var context = new webkitAudioContext();
-  }catch(e){
-    alert(e)
+  function poyo(freq){
+      try{
+      alert(1)
+      var oscillator = context.createOscillator();
+      eg = context.createGain();
+            //eg.gain.linearRampToValueAtTime(1, 0.1);
+      oscillator.connect(eg);
+      eg.connect(context.destination);
+      //console.log(eg);
+      alert(2)
+
+      oscillator.type = 1;
+      oscillator.frequency.value = freq;
+      //oscillator.connect(context.destination);
+      oscillator.start(0);
+      alert(3)
+
+     var t0 = context.currentTime;
+     //eg.gain.value= 0;
+     eg.gain.setValueAtTime(1, t0);
+     eg.gain.linearRampToValueAtTime(0.1, t0 + 0.5);
+      alert(4)
+     }catch(e){
+        alert(e);
+      }
+
+     return oscillator
   }
+
+  n1 = null;
+  n2 = null;
+  n3 = null;
+
   $('#start').bind("touchstart",function(){
     alert("touch")
+  });
+  $('#start').click(function(){
+    alert(0);
+  //setInterval(function(){
+    if(n1)n1.stop(0);
+    if(n2)n2.stop(0);
+    if(n3)n3.stop(0);
+    n1 = poyo(220 + Math.random()*400);
+    n2 = poyo(220 + Math.random()*400);
+    n3 = poyo(220 + Math.random()*400);
+  //}, 500)
   });
     alert("init");
 
