@@ -14,6 +14,7 @@ $(function(){
   var pitch = 0;
   var mod = 0; // 0 major, 1 minor, 2 sus4
 
+  /*
   window.addEventListener('devicemotion', function(e){
     var gravity = e.accelerationIncludingGravity;
     var za = Math.abs(Math.round(gravity.z));
@@ -29,6 +30,7 @@ $(function(){
 
 
   });
+  */
 
 
   var soundBuffer;
@@ -58,13 +60,15 @@ $(function(){
       eg.connect(context.destination);
       console.log(eg);
 
+     var t0 = context.currentTime;
+
       //oscillator.type = 1;
       //oscillator.frequency.value = freq;
-      oscillator.playbackRate.value = freq/440 * (pitch/100 + 1);
+      //oscillator.playbackRate.value = freq/440 * (pitch/100 + 1);
+      oscillator.playbackRate.setValueAtTime(freq/440 * (pitch/100 + 1),t0);
       //oscillator.connect(context.destination);
       oscillator.start(0);
 
-     var t0 = context.currentTime;
      //eg.gain.value= 0;
      eg.gain.setValueAtTime(1, t0);
      eg.gain.linearRampToValueAtTime(0.1, t0 + 0.5);
