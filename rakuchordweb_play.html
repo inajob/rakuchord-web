@@ -91,6 +91,7 @@ $(function(){
   var mFlag = false;
   function toneBtn(elm, freq){
     elm.bind('touchstart',function(){
+      alert("touch tone")
       $(this).css('background-color','blue');
       if(mFlag){
         n1.stop(0);
