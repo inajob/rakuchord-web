@@ -13,7 +13,8 @@ $(function(){
   var margin = height - 74 * 7 ;
   $("#whole").css("margin-top",margin + "px");
 
-  var context = new webkitAudioContext();
+  window.AudioContext = window.AudioContext || window.webkitAudioContext
+  var context = new AudioContext();
   var pitch = 0;
   var mod = 0; // 0 major, 1 minor, 2 sus4
 
